@@ -97,10 +97,6 @@ class SpeechModel(object):
 
         callbacks = [WandbCallback()]
 
-        # if train_params['tensorboard']:
-        #     callbacks.append(tf.keras.callbacks.TensorBoard(
-        #         train_params['log_dir'], write_images=True))
-
         self.model.fit_generator(generator, epochs=train_params['epochs'],
                                  steps_per_epoch=train_params['steps_per_epoch'],
                                  callbacks=callbacks)
