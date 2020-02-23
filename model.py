@@ -1,4 +1,5 @@
 import tensorflow as tf
+from wandb.keras import WandbCallback
 
 
 def clipped_relu(x):
@@ -94,11 +95,11 @@ class SpeechModel(object):
 
     def train_generator(self, generator, train_params):
 
-        callbacks = []
+        callbacks = [WandbCallback()]
 
-        if train_params['tensorboard']:
-            callbacks.append(tf.keras.callbacks.TensorBoard(
-                train_params['log_dir'], write_images=True))
+        # if train_params['tensorboard']:
+        #     callbacks.append(tf.keras.callbacks.TensorBoard(
+        #         train_params['log_dir'], write_images=True))
 
         self.model.fit_generator(generator, epochs=train_params['epochs'],
                                  steps_per_epoch=train_params['steps_per_epoch'],

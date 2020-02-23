@@ -1,3 +1,4 @@
+import wandb
 from model import SpeechModel
 import config
 import os
@@ -5,6 +6,8 @@ import utils
 
 
 if __name__ == '__main__':
+    
+    wandb.init(project="baidu-deepspeech2")
 
     character_mapping = utils.create_character_mapping()
     data_details = utils.get_data_details(filename=os.path.join(config.preprocessing['data_dir'], 'metadata.csv'))
