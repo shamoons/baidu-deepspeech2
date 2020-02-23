@@ -24,7 +24,8 @@ def get_data_details(filename):
 
     # Get max lengths
     with open(filename, 'r') as metadata:
-        metadata_reader = csv.DictReader(metadata, fieldnames=['filename', 'spec_length', 'labels_length', 'labels'])
+        metadata_reader = csv.DictReader(
+            metadata, fieldnames=['filename', 'spec_length', 'labels_length', 'labels'])
         next(metadata_reader)
         for row in metadata_reader:
             if int(row['spec_length']) > result['max_input_length']:
@@ -41,7 +42,8 @@ def create_data_generator(directory, max_input_length, max_label_length, batch_s
     x, y, input_lengths, label_lengths = [], [], [], []
 
     with open(os.path.join(directory, 'metadata.csv'), 'r') as metadata:
-        metadata_reader = csv.DictReader(metadata, fieldnames=['filename', 'spec_length', 'labels_length', 'labels'])
+        metadata_reader = csv.DictReader(
+            metadata, fieldnames=['filename', 'spec_length', 'labels_length', 'labels'])
         next(metadata_reader)
         for row in metadata_reader:
             audio = np.load(os.path.join(directory, row['filename'] + '.npy'))
@@ -49,12 +51,21 @@ def create_data_generator(directory, max_input_length, max_label_length, batch_s
             y.append([int(i) for i in row['labels'].split(' ')])
             input_lengths.append(row['spec_length'])
             label_lengths.append(row['labels_length'])
+
             if len(x) == batch_size:
+                # print({
+                #     'inputs': tf.keras.preprocessing.sequence.pad_sequences(x, maxlen=max_input_length, padding='post'),
+                #     'labels': tf.keras.preprocessing.sequence.pad_sequences(y, maxlen=max_label_length, padding='post'),
+                #     'input_lengths': np.asarray(input_lengths, dtype=np.int16),
+                #     'label_lengths': np.asarray(label_lengths, dtype=np.int16)
+                # }, {
+                #     'ctc': np.zeros([batch_size])
+                # })
                 yield {
                     'inputs': tf.keras.preprocessing.sequence.pad_sequences(x, maxlen=max_input_length, padding='post'),
                     'labels': tf.keras.preprocessing.sequence.pad_sequences(y, maxlen=max_label_length, padding='post'),
-                    'input_lengths': np.asarray(input_lengths),
-                    'label_lengths': np.asarray(label_lengths)
+                    'input_lengths': np.asarray(input_lengths, dtype=np.int16),
+                    'label_lengths': np.asarray(label_lengths, dtype=np.int16)
                 }, {
                     'ctc': np.zeros([batch_size])
                 }

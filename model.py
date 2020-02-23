@@ -31,13 +31,15 @@ class SpeechModel(object):
 
     def __init__(self, hparams):
 
-        input_data = tf.keras.layers.Input(name='inputs', shape=[hparams['max_input_length'], 161])
+        input_data = tf.keras.layers.Input(
+            name='inputs', shape=[hparams['max_input_length'], 161])
         x = input_data
 
         if hparams['use_bn']:
             x = tf.keras.layers.BatchNormalization()(x)
 
-        x = tf.keras.layers.ZeroPadding1D(padding=(0, hparams['max_input_length']))(x)
+        x = tf.keras.layers.ZeroPadding1D(
+            padding=(0, hparams['max_input_length']))(x)
         for i in range(len(hparams['conv_channels'])):
             x = tf.keras.layers.Conv1D(hparams['conv_channels'][i], hparams['conv_filters'][i],
                                        strides=hparams['conv_strides'][i], activation='relu', padding='same')(x)
@@ -48,7 +50,8 @@ class SpeechModel(object):
         for h_units in hparams['rnn_units']:
             if hparams['bidirectional_rnn']:
                 h_units = int(h_units / 2)
-            gru = tf.keras.layers.GRU(h_units, activation='relu', return_sequences=True)
+            gru = tf.keras.layers.GRU(
+                h_units, activation='relu', return_sequences=True)
             if hparams['bidirectional_rnn']:
                 gru = tf.keras.layers.Bidirectional(gru, merge_mode='sum')
             x = gru(x)
@@ -58,22 +61,28 @@ class SpeechModel(object):
 
         if hparams['future_context'] > 0:
             if hparams['future_context'] > 1:
-                x = tf.keras.layers.ZeroPadding1D(padding=(0, hparams['future_context'] - 1))(x)
-            x = tf.keras.layers.Conv1D(100, hparams['future_context'], activation='relu')(x)
+                x = tf.keras.layers.ZeroPadding1D(
+                    padding=(0, hparams['future_context'] - 1))(x)
+            x = tf.keras.layers.Conv1D(
+                100, hparams['future_context'], activation='relu')(x)
 
         y_pred = tf.keras.layers.TimeDistributed(tf.keras.layers.Dense(hparams['vocab_size'] + 1,
                                                                        activation='sigmoid'))(x)
 
-        labels = tf.keras.layers.Input(name='labels', shape=[None], dtype='int32')
-        input_length = tf.keras.layers.Input(name='input_lengths', shape=[1], dtype='int32')
-        label_length = tf.keras.layers.Input(name='label_lengths', shape=[1], dtype='int32')
+        labels = tf.keras.layers.Input(
+            name='labels', shape=[None], dtype='int32')
+        input_length = tf.keras.layers.Input(
+            name='input_lengths', shape=[1], dtype='int32')
+        label_length = tf.keras.layers.Input(
+            name='label_lengths', shape=[1], dtype='int32')
 
         loss_out = tf.keras.layers.Lambda(ctc_lambda_func, output_shape=(1,), name='ctc')([y_pred,
                                                                                            labels,
                                                                                            input_length,
                                                                                            label_length])
 
-        self.model = tf.keras.Model(inputs=[input_data, labels, input_length, label_length], outputs=[loss_out])
+        self.model = tf.keras.Model(
+            inputs=[input_data, labels, input_length, label_length], outputs=[loss_out])
 
         if hparams['verbose']:
             print(self.model.summary())
@@ -88,7 +97,8 @@ class SpeechModel(object):
         callbacks = []
 
         if train_params['tensorboard']:
-            callbacks.append(tf.keras.callbacks.TensorBoard(train_params['log_dir'], write_images=True))
+            callbacks.append(tf.keras.callbacks.TensorBoard(
+                train_params['log_dir'], write_images=True))
 
         self.model.fit_generator(generator, epochs=train_params['epochs'],
                                  steps_per_epoch=train_params['steps_per_epoch'],
