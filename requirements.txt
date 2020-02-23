@@ -1,5 +1,0 @@
-numpy
-tensorflow==2.0.0alpha
-scipy
-tqdm
-soundfile
