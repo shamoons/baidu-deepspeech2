@@ -14,7 +14,7 @@ model = {
     'conv_filters': [5],
     'conv_strides': [2],
 
-    'rnn_units': [64],
+    'rnn_units': [64, 64, 64, 64, 64],
     'bidirectional_rnn': True,
 
     'future_context': 2,
@@ -30,7 +30,7 @@ training = {
     'tensorboard': False,
     'log_dir': './logs',
 
-    'batch_size': 32,
+    'batch_size': 16,
     'epochs': 5,
     'validation_size': 0.2
 

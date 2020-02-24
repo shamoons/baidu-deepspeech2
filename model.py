@@ -97,6 +97,6 @@ class SpeechModel(object):
 
         callbacks = [WandbCallback()]
 
-        self.model.fit_generator(generator, epochs=train_params['epochs'],
-                                 steps_per_epoch=train_params['steps_per_epoch'],
-                                 callbacks=callbacks)
+        self.model.fit(generator, epochs=train_params['epochs'],
+                       steps_per_epoch=train_params['steps_per_epoch'],
+                       callbacks=callbacks)
